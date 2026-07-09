@@ -17,10 +17,6 @@ def load_dataset(path):
     try:
         return pd.read_excel(path, header=3)
     except:
-        pass
-    try:
-        return pd.read_csv(path, header=3, sep=',', engine='python', encoding='ISO-8859-1')
-    except:
         return None
 
 df = load_dataset(file_path)
@@ -29,7 +25,7 @@ if df is None:
     print("Gagal membaca file ExportFile.xls.")
     exit()
 
-target_indices = [2, 3, 4, 7, 8, 10, 11, 12, 13, 14]
+target_indices = [2, 3, 5, 9, 11, 14, 16, 18, 20, 22]
 df_clean = df.iloc[:, target_indices].copy()
 
 new_columns = [

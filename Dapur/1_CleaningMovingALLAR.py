@@ -7,7 +7,7 @@ from xlwings.utils import col_name as get_col_name
 
 print(f"--- PROSES 1: PEMBERSIHAN DATA (CLEANING) ---")
 
-file_path = 'ExportFile.xls'
+file_path = 'Piutang.xls'
 
 if not os.path.exists(file_path):
     print(f"File '{file_path}' tidak ditemukan. Pastikan file ada.")
@@ -22,7 +22,7 @@ def load_dataset(path):
 df = load_dataset(file_path)
 
 if df is None:
-    print("Gagal membaca file ExportFile.xls.")
+    print("Gagal membaca file Piutang.xls.")
     exit()
 
 target_indices = [2, 3, 5, 9, 11, 14, 16, 18, 20, 22]
@@ -90,7 +90,7 @@ if 'Jatuh Tempo' in df_clean.columns:
 
 df_clean.reset_index(drop=True, inplace=True)
 
-output_filename = f"EXPORT_Sementara.xlsx"
+output_filename = f"Piutang_temp.xlsx"
 df_clean.to_excel(output_filename, index=False)
 print(f"Data bersih siap ({len(df_clean)} baris).")
 

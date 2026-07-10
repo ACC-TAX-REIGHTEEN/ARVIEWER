@@ -2,7 +2,7 @@
 
 > **Pembaruan data AR dashboard Excel otomatis — dari ekspor Accurate & rekap Giro ke ARVIEWER.xlsm siap pakai dalam sekali klik**
 
-Pipeline Python tiga langkah yang membaca ekspor AR dari Accurate (`ExportFile.xls`) dan rekap pembayaran Giro (`Giro.xls`), membersihkan dan menstrukturisasi data, lalu menyuntikkannya langsung ke sheet `Source` di **`ARVIEWER.xlsm`** — sebuah workbook Excel macro-enabled yang menjadi dashboard/viewer piutang tim — termasuk pengisian otomatis kolom `Tanggal JT` berdasarkan pencocokan nomor faktur dengan tanggal cek giro yang ada.
+Pipeline Python tiga langkah yang membaca ekspor AR dari Accurate (`Piutang.xls`) dan rekap pembayaran Giro (`Giro.xls`), membersihkan dan menstrukturisasi data, lalu menyuntikkannya langsung ke sheet `Source` di **`ARVIEWER.xlsm`** — sebuah workbook Excel macro-enabled yang menjadi dashboard/viewer piutang tim — termasuk pengisian otomatis kolom `Tanggal JT` berdasarkan pencocokan nomor faktur dengan tanggal cek giro yang ada.
 
 ---
 
@@ -30,7 +30,7 @@ Pipeline Python tiga langkah yang membaca ekspor AR dari Accurate (`ExportFile.x
 
 `ARVIEWER.xlsm` adalah dashboard Excel macro-enabled yang digunakan tim untuk melihat, memfilter, dan menganalisis data piutang. Agar informasinya selalu terkini, datanya perlu diperbarui secara berkala dari dua sumber:
 
-1. **`ExportFile.xls`** — ekspor laporan AR dari Accurate (berisi faktur, saldo, tanggal jatuh tempo, nama pelanggan, dst.)
+1. **`Piutang.xls`** — ekspor laporan AR dari Accurate (berisi faktur, saldo, tanggal jatuh tempo, nama pelanggan, dst.)
 2. **`Giro.xls`** — rekap pembayaran giro/cek yang diterima (berisi nomor faktur, bank, tanggal cair)
 
 Pipeline ini mengotomasi seluruh proses pembaruan tersebut: membersihkan kedua file sumber, menyuntikkan data bersih ke sheet `Source` di dalam `ARVIEWER.xlsm`, dan mengisi kolom `Tanggal JT` dengan tanggal giro yang dicocokkan per nomor faktur — semua tanpa membuka Excel secara manual.
@@ -40,14 +40,14 @@ Pipeline ini mengotomasi seluruh proses pembaruan tersebut: membersihkan kedua f
 ## ✨ Fitur Utama
 
 - **Satu perintah, tiga proses** — Cukup jalankan satu orkestrator; ketiga skrip pembersihan dan injeksi berjalan berurutan secara otomatis.
-- **Seleksi kolom dari ekspor Accurate** — Dari puluhan kolom di `ExportFile.xls`, hanya 10 kolom relevan yang diambil berdasarkan indeks posisi, dengan penamaan ulang yang rapi.
+- **Seleksi kolom dari ekspor Accurate** — Dari puluhan kolom di `Piutang.xls`, hanya 10 kolom relevan yang diambil berdasarkan indeks posisi, dengan penamaan ulang yang rapi.
 - **Forward-fill kode pelanggan** — Menangani sel tergabung (merged cell) di kolom `Kode Pelanggan` pada ekspor Accurate dengan mengisi ke bawah secara otomatis.
 - **Normalisasi bulan Indonesia** — Mengonversi nama bulan bahasa Indonesia (Jan, Peb, Mar, Mei, Agu, Okt, Nop, Des) ke format yang dapat diparsing Python.
 - **Format tanggal Indonesia di Excel** — Setelah data disuntikkan, kolom tanggal diformat dengan locale Indonesia (`[$-421]dd mmm yyyy`) via xlwings sehingga tampilan di ARVIEWER tetap konsisten.
 - **Pencocokan Giro per faktur** — Tanggal cek giro dicocokkan ke nomor faktur, diurutkan kronologis, dikelompokkan per bulan, dan ditulis ke kolom `Tanggal JT` dalam format ringkas yang mudah dibaca.
 - **Penanganan multi-giro** — Satu faktur dengan lebih dari satu tanggal cek (giro cicilan/bertahap) ditangani otomatis: semua tanggal digabung dengan pemisah `&`.
 - **Injeksi langsung ke .xlsm via xlwings** — Data dimasukkan ke workbook macro-enabled tanpa merusak VBA, macro, atau format yang ada di sheet-sheet lain.
-- **Auto-cleanup menyeluruh** — File sumber (`ExportFile.xls`, `Giro.xls`) dan file sementara dihapus otomatis setelah proses selesai; `ARVIEWER.xlsm` dikembalikan ke folder utama.
+- **Auto-cleanup menyeluruh** — File sumber (`Piutang.xls`, `Giro.xls`) dan file sementara dihapus otomatis setelah proses selesai; `ARVIEWER.xlsm` dikembalikan ke folder utama.
 
 ---
 
@@ -87,7 +87,7 @@ pip install pandas openpyxl xlwings xlrd
 │
 ├── 📄 Jalankan Pembersihan dan Injeksi.py ← Orkestrator utama. Jalankan ini
 │
-├── 📄 ExportFile.xls           ← [INPUT] Ekspor AR dari Accurate (taruh di sini)
+├── 📄 Piutang.xls           ← [INPUT] Ekspor AR dari Accurate (taruh di sini)
 ├── 📄 Giro.xls                 ← [INPUT] Rekap giro/cek masuk (taruh di sini)
 ├── 📄 ARVIEWER.xlsm            ← [INPUT+OUTPUT] Workbook dashboard (taruh di sini)
 │
@@ -110,7 +110,7 @@ Letakkan ketiga file berikut di folder utama (sejajar dengan `Jalankan Pembersih
 
 | File | Sumber |
 |---|---|
-| `ExportFile.xls` | Export laporan AR dari Accurate (nama **harus persis**) |
+| `Piutang.xls` | Export laporan AR dari Accurate (nama **harus persis**) |
 | `Giro.xls` | Rekap pembayaran giro/cek dari tim keuangan (nama **harus persis**) |
 | `ARVIEWER.xlsm` | Workbook dashboard yang akan diperbarui (nama **harus persis**) |
 
@@ -135,7 +135,7 @@ atau klik dua kali file tersebut jika Python sudah terasosiasi di sistem.
 --> Memeriksa ketersediaan file data utama...
 --> Memeriksa ketersediaan skrip di folder Dapur...
 --> Memindahkan file data utama ke folder Dapur untuk diproses...
-    * Berhasil memindahkan ExportFile.xls -> Dapur/
+    * Berhasil memindahkan Piutang.xls -> Dapur/
     * Berhasil memindahkan Giro.xls -> Dapur/
     * Berhasil memindahkan ARVIEWER.xlsm -> Dapur/
 
@@ -176,7 +176,7 @@ PROSES BERHASIL! Kolom 'Tanggal JT' berhasil diperbarui dengan aman.
 [Mulai: Jalankan Pembersihan dan Injeksi.py]
    │
    ├─── Validasi file root
-   │       Cek ExportFile.xls ada
+   │       Cek Piutang.xls ada
    │       Cek Giro.xls ada
    │       Cek ARVIEWER.xlsm ada
    │       Jika kurang → tampilkan daftar & berhenti
@@ -187,18 +187,18 @@ PROSES BERHASIL! Kolom 'Tanggal JT' berhasil diperbarui dengan aman.
    │       Jika kurang → tampilkan daftar & berhenti
    │
    ├─── PINDAHKAN (bukan salin) ketiga file → Dapur/
-   │       ExportFile.xls → Dapur/ExportFile.xls
+   │       Piutang.xls → Dapur/ExportFile.xls
    │       Giro.xls → Dapur/Giro.xls
    │       ARVIEWER.xlsm → Dapur/ARVIEWER.xlsm
    │
    ├─── Pindah ke direktori Dapur/ → jalankan skrip
    │
    ├─── [Skrip 1] 1_CleaningMovingALLAR.py
-   │       ├─ Proses 1: Bersihkan ExportFile.xls → EXPORT_Sementara.xlsx
+   │       ├─ Proses 1: Bersihkan Piutang.xls → Piutang_temp.xlsx
    │       ├─ Proses 2: Buka ARVIEWER.xlsm via xlwings (background)
    │       │            Hapus data lama A4:K{N} → Tulis data baru mulai A4
    │       │            Format kolom tanggal → Simpan & tutup
-   │       └─ Proses 3: Hapus ExportFile.xls & EXPORT_Sementara.xlsx
+   │       └─ Proses 3: Hapus Piutang.xls & Piutang_temp.xlsx
    │
    ├─── [Skrip 2] 2_AddGiroDate.py
    │       └─ Bersihkan Giro.xls → Giro_temp.xlsx
@@ -224,7 +224,7 @@ PROSES BERHASIL! Kolom 'Tanggal JT' berhasil diperbarui dengan aman.
 
 ### Skrip 1 — Cleaning & Inject ke Source
 
-**Input:** `ExportFile.xls` (header ada di baris ke-4, index 3)
+**Input:** `Piutang.xls` (header ada di baris ke-4, index 3)
 
 **Kolom yang dipilih** dari ekspor Accurate (berdasarkan posisi indeks, bukan nama):
 
@@ -248,7 +248,7 @@ PROSES BERHASIL! Kolom 'Tanggal JT' berhasil diperbarui dengan aman.
 **Proses pembersihan:**
 
 ```
-ExportFile.xls
+Piutang.xls
   ├─ Baca dengan header baris ke-4 (index 3)
   ├─ Pilih 10 kolom berdasarkan indeks posisi
   ├─ Forward-fill Kode Pelanggan (isi baris kosong akibat merge cell Accurate)
@@ -337,7 +337,7 @@ Buka ARVIEWER.xlsm via xlwings (background)
 
 ## 📋 Format Data Input
 
-### `ExportFile.xls`
+### `Piutang.xls`
 
 File ekspor laporan AR dari Accurate. **Persyaratan kritis:**
 - Format file: `.xls` (bukan `.xlsx`)
@@ -351,7 +351,7 @@ File ekspor laporan AR dari Accurate. **Persyaratan kritis:**
 Rekap pembayaran giro/cek. **Persyaratan:**
 - Format file: `.xls`
 - Tidak memiliki baris header yang baku — baris data valid diidentifikasi dari jumlah kolom tidak kosong (≥ 9)
-- Kolom ke-4 (indeks 3) harus berisi **No. Faktur (SO)** yang sama persis dengan `No. Faktur` di `ExportFile.xls` agar pencocokan berhasil
+- Kolom ke-4 (indeks 3) harus berisi **No. Faktur (SO)** yang sama persis dengan `No. Faktur` di `Piutang.xls` agar pencocokan berhasil
 
 ### `ARVIEWER.xlsm`
 
@@ -426,7 +426,7 @@ Hasil mapping:     "JT 01,15/01/25 & 10/02/25"
 ## 🛠️ Troubleshooting
 
 ### ❌ `[GAGAL] File berikut tidak ditemukan di folder utama`
-Salah satu atau lebih dari `ExportFile.xls`, `Giro.xls`, `ARVIEWER.xlsm` belum ada di folder utama. Pastikan ketiga file ada dengan nama **persis** (termasuk ekstensi `.xls` dan `.xlsm`).
+Salah satu atau lebih dari `Piutang.xls`, `Giro.xls`, `ARVIEWER.xlsm` belum ada di folder utama. Pastikan ketiga file ada dengan nama **persis** (termasuk ekstensi `.xls` dan `.xlsm`).
 
 ### ❌ `TERJADI ERROR: ... PermissionError ...` (di Skrip 1 atau 3)
 `ARVIEWER.xlsm` sedang terbuka di Excel. Tutup file tersebut terlebih dahulu, lalu jalankan ulang pipeline.
@@ -437,7 +437,7 @@ Sheet di dalam `ARVIEWER.xlsm` yang menjadi target data tidak bernama `Source`. 
 ### ❌ `ERROR: Judul kolom 'Tanggal JT' tidak ditemukan pada baris 3!`
 Header di baris 3 sheet `Source` tidak mengandung teks `Tanggal JT`. Pastikan kolom tersebut ada di baris 3 dan namanya persis `Tanggal JT`.
 
-### ❌ `Gagal membaca file ExportFile.xls`
+### ❌ `Gagal membaca file Piutang.xls`
 Kemungkinan penyebab: (1) file rusak atau terproteksi, (2) `xlrd` versi terlalu baru. Coba install `xlrd` versi kompatibel:
 ```bash
 pip install "xlrd>=1.0.0,<2.0.0"
@@ -447,7 +447,7 @@ pip install "xlrd>=1.0.0,<2.0.0"
 Terjadi jika Excel tidak menerapkan format tanggal. Skrip menggunakan xlwings untuk memformat ulang kolom tanggal dengan `[$-421]dd mmm yyyy;@`. Pastikan xlwings dan Excel sudah terinstall dengan benar dan berjalan tanpa error.
 
 ### ❌ Kolom `Tanggal JT` kosong semua setelah proses
-Berarti tidak ada nomor faktur di `Giro.xls` yang cocok dengan nomor di `ExportFile.xls`. Periksa format `No. Faktur. (SO)` di Giro — pastikan nilainya identik (termasuk trailing `.0` — skrip membuang `.0` dari keduanya sebelum membandingkan).
+Berarti tidak ada nomor faktur di `Giro.xls` yang cocok dengan nomor di `Piutang.xls`. Periksa format `No. Faktur. (SO)` di Giro — pastikan nilainya identik (termasuk trailing `.0` — skrip membuang `.0` dari keduanya sebelum membandingkan).
 
 ### ❌ Proses berhenti di tengah, file terlanjur dipindahkan ke Dapur/
 Jika pipeline gagal setelah file dipindahkan ke `Dapur/`, file tidak akan dikembalikan otomatis. Ambil manual ketiga file dari dalam folder `Dapur/` kembali ke folder utama, lalu perbaiki penyebab error sebelum menjalankan ulang.
@@ -459,8 +459,8 @@ Pastikan Microsoft Excel sudah terinstall di komputer. xlwings tidak mendukung L
 
 ## 📌 Catatan Penting
 
-- **File input dipindahkan, bukan disalin** — Orkestrator menggunakan `shutil.move()`. Ketiga file (`ExportFile.xls`, `Giro.xls`, `ARVIEWER.xlsm`) akan **hilang dari folder utama** selama proses berlangsung dan baru dikembalikan (`ARVIEWER.xlsm`) atau dihapus (dua file `.xls`) setelah selesai. **Simpan backup** jika data sumber masih dibutuhkan setelah proses.
-- **Hanya `ARVIEWER.xlsm` yang dikembalikan** — `ExportFile.xls` dan `Giro.xls` dihapus otomatis setelah data berhasil diproses. Ini disengaja karena datanya sudah tersimpan di dalam ARVIEWER.
+- **File input dipindahkan, bukan disalin** — Orkestrator menggunakan `shutil.move()`. Ketiga file (`Piutang.xls`, `Giro.xls`, `ARVIEWER.xlsm`) akan **hilang dari folder utama** selama proses berlangsung dan baru dikembalikan (`ARVIEWER.xlsm`) atau dihapus (dua file `.xls`) setelah selesai. **Simpan backup** jika data sumber masih dibutuhkan setelah proses.
+- **Hanya `ARVIEWER.xlsm` yang dikembalikan** — `Piutang.xls` dan `Giro.xls` dihapus otomatis setelah data berhasil diproses. Ini disengaja karena datanya sudah tersimpan di dalam ARVIEWER.
 - **Data lama selalu terhapus dulu** — Setiap kali pipeline dijalankan, isi `A4:K{N}` di sheet `Source` dihapus sepenuhnya sebelum data baru ditulis. Ini memastikan tidak ada data lama yang bercampur.
 - **Jangan jalankan dua instance sekaligus** — xlwings membuka Excel secara background; menjalankan pipeline dua kali bersamaan dapat menyebabkan konflik file.
 - **Jangan ubah nama kolom `Tanggal JT` di ARVIEWER** — Skrip 3 mencari kolom ini berdasarkan nama teks eksak di baris 3. Jika diubah, injeksi Giro tidak akan berjalan.

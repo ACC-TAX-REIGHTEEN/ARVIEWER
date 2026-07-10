@@ -7,7 +7,7 @@ import sys
 dapur_dir = "Dapur"
 
 required_root_files = [
-    "ExportFile.xls", 
+    "Piutang.xls", 
     "Giro.xls", 
     "ARVIEWER.xlsm"
 ]

@@ -16,12 +16,14 @@ required_dapur_files = [
     "__init__.py",
     "1_CleaningMovingALLAR.py",
     "2_AddGiroDate.py",
+    "2_HCleanerAccGiroDue.py",
     "3_InjectGiroDtl2SS.py"
 ]
 
 scripts_to_run = [
     "1_CleaningMovingALLAR.py",
     "2_AddGiroDate.py",
+    "2_HCleanerAccGiroDue.py",
     "3_InjectGiroDtl2SS.py"
 ]
 

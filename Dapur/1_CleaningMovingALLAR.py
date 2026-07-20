@@ -131,7 +131,7 @@ try:
     
     if last_row_existing >= 4:
         print(f"Membersihkan data lama...")
-        ws.range(f'A4:K{last_row_existing}').clear_contents()
+        ws.range(f'A4:M{last_row_existing}').clear_contents()
         
     print("Menyalin data baru...")
     if len(df_clean) > 0:

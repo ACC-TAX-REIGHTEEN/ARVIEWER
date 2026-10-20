@@ -27,7 +27,7 @@ scripts_to_run = [
     "3_InjectGiroDtl2SS.py"
 ]
 
-print("--- PROSES UTAMA: ORKESTRASI & EKSEKUSI DATA ---")
+print("--> PROSES UTAMA: ORKESTRASI & EKSEKUSI DATA")
 
 print("--> Memeriksa ketersediaan file data utama...")
 missing_root_files = []
@@ -36,11 +36,11 @@ for f in required_root_files:
         missing_root_files.append(f)
 
 if missing_root_files:
-    print("\n[GAGAL] Proses dihentikan. File data berikut tidak ditemukan di folder utama:")
+    print("--> [GAGAL] Proses dihentikan. File data berikut tidak ditemukan di folder utama:")
     for item in missing_root_files:
-        print(f"   - {item}")
-    print("Silakan lengkapi file di atas terlebih dahulu.")
-    input("\n--> Tekan Enter untuk keluar...")
+        print(f"-->    - {item}")
+    print("--> Silakan lengkapi file di atas terlebih dahulu.")
+    input("--> Tekan Enter untuk keluar...")
     sys.exit()
 
 print("--> Memeriksa ketersediaan skrip di folder Dapur...")
@@ -54,14 +54,14 @@ else:
             missing_dapur_items.append(file_path)
 
 if missing_dapur_items:
-    print("\n[GAGAL] Proses dihentikan. Folder 'Dapur' atau skrip di dalamnya tidak lengkap:")
+    print("--> [GAGAL] Proses dihentikan. Folder 'Dapur' atau skrip di dalamnya tidak lengkap:")
     for item in missing_dapur_items:
-        print(f"   - {item}")
-    print("Silakan pastikan semua skrip pembersihan dan injeksi berada di dalam folder Dapur.")
-    input("\n--> Tekan Enter untuk keluar...")
+        print(f"-->    - {item}")
+    print("--> Silakan pastikan semua skrip pembersihan dan injeksi berada di dalam folder Dapur.")
+    input("--> Tekan Enter untuk keluar...")
     sys.exit()
 
-print("--> Memindahkan file data utama ke folder Dapur untuk diproses...")
+print("--> Menyalin file data utama ke folder Dapur untuk diproses...")
 try:
     for f in required_root_files:
         src_path = f
@@ -70,11 +70,11 @@ try:
         if os.path.exists(dest_path):
             os.remove(dest_path)
             
-        shutil.move(src_path, dest_path)
-        print(f"    * Berhasil memindahkan {f} -> {dapur_dir}/")
+        shutil.copy2(src_path, dest_path)
+        print(f"-->     * Berhasil menyalin {f} -> {dapur_dir}/")
 except Exception as e:
-    print(f"\n[ERROR] Gagal memindahkan file ke folder Dapur: {e}")
-    input("\n--> Tekan Enter untuk keluar...")
+    print(f"--> [ERROR] Gagal menyalin file ke folder Dapur: {e}")
+    input("--> Tekan Enter untuk keluar...")
     sys.exit()
 
 current_dir = os.getcwd()
@@ -82,35 +82,35 @@ os.chdir(dapur_dir)
 
 try:
     for script in scripts_to_run:
-        print(f"\n--> Menjalankan skrip: {script}...")
+        print(f"--> Menjalankan skrip: {script}...")
         subprocess.run([sys.executable, script], check=True)
 except subprocess.CalledProcessError:
-    print(f"\n[ERROR] Terjadi kesalahan saat menjalankan {script}. Proses dihentikan otomatis.")
+    print(f"--> [ERROR] Terjadi kesalahan saat menjalankan {script}. Proses dihentikan otomatis.")
     os.chdir(current_dir)
-    input("\n--> Tekan Enter untuk keluar...")
+    input("--> Tekan Enter untuk keluar...")
     sys.exit()
 
 os.chdir(current_dir)
 
-print("\n--> Mengembalikan file hasil pembaruan ke folder utama...")
+print("--> Mengembalikan file hasil pembaruan ke folder utama...")
 arviewer_in_dapur = os.path.join(dapur_dir, "ARVIEWER.xlsm")
 
 if os.path.exists(arviewer_in_dapur):
     if os.path.exists("ARVIEWER.xlsm"):
         os.remove("ARVIEWER.xlsm")
     shutil.move(arviewer_in_dapur, "ARVIEWER.xlsm")
-    print("    * File ARVIEWER.xlsm berhasil dipindahkan kembali ke folder utama.")
+    print("-->     * File ARVIEWER.xlsm hasil olahan berhasil diperbarui di folder utama.")
 else:
-    print("\n[PERINGATAN] File ARVIEWER.xlsm tidak ditemukan di folder Dapur setelah proses selesai!")
+    print("--> [PERINGATAN] File ARVIEWER.xlsm tidak ditemukan di folder Dapur setelah proses selesai!")
 
 print("--> Membersihkan file sisa (.xls, .xlsx, .xlsm) di folder Dapur...")
 for ext in ['*.xls', '*.xlsx', '*.xlsm']:
     for file in glob.glob(os.path.join(dapur_dir, ext)):
         try:
             os.remove(file)
-            print(f"    * Menghapus file sisa: {os.path.basename(file)}")
+            print(f"-->     * Menghapus file sementara: {os.path.basename(file)}")
         except Exception as e:
-            print(f"    * Gagal menghapus file sisa {file}: {e}")
+            print(f"-->     * Gagal menghapus file sementara {file}: {e}")
 
-print("\n=== SEMUA PROSES BERHASIL DISELESAIKAN DENGAN AMAN! ===")
+print("--> SEMUA PROSES BERHASIL DISELESAIKAN DENGAN AMAN!")
 input("--> Tekan Enter untuk menutup jendela...")

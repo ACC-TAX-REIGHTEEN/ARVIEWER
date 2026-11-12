@@ -1,14 +1,17 @@
-import pandas as pd
+import warnings
 from datetime import datetime
+import pandas as pd
+
 
 indo_months_in = {
     'Jan': 'Jan', 'Feb': 'Feb', 'Mar': 'Mar', 'Apr': 'Apr', 'Mei': 'May', 'Jun': 'Jun',
     'Jul': 'Jul', 'Agu': 'Aug', 'Sep': 'Sep', 'Okt': 'Oct', 'Nop': 'Nov', 'Des': 'Dec',
-    'Peb': 'Feb', 'Ags': 'Aug', 
+    'Peb': 'Feb', 'Ags': 'Aug',
     'jan': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'apr': 'Apr', 'mei': 'May', 'jun': 'Jun',
-    'jul': 'Jul', 'agu': 'Aug', 'ags': 'Aug', 'sep': 'Sep', 'okt': 'Oct', 'nop': 'Nov', 
+    'jul': 'Jul', 'agu': 'Aug', 'ags': 'Aug', 'sep': 'Sep', 'okt': 'Oct', 'nop': 'Nov',
     'nov': 'Nov', 'des': 'Dec'
 }
+
 
 def parse_indo_date(date_str):
     if pd.isna(date_str):
@@ -20,7 +23,14 @@ def parse_indo_date(date_str):
         return datetime.strptime(f"{day} {en_month} {year}", "%d %b %Y")
     return pd.NaT
 
-df = pd.read_excel('Giro_temp.xlsx')
+
+try:
+    df = pd.read_excel('Giro_temp.xlsx', engine='calamine')
+except Exception:
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        df = pd.read_excel('Giro_temp.xlsx', engine='openpyxl')
+
 today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 df['temp_date'] = df['Tgl Cek'].apply(parse_indo_date)

@@ -1,6 +1,16 @@
+import warnings
 import pandas as pd
 
-df = pd.read_excel('Giro.xls', header=None)
+
+try:
+    df = pd.read_excel('Giro.xls', header=None, engine='calamine')
+except Exception:
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        try:
+            df = pd.read_excel('Giro.xls', header=None, engine='openpyxl')
+        except Exception:
+            df = pd.read_excel('Giro.xls', header=None, engine='xlrd')
 
 data_bersih = []
 for i in range(len(df)):
@@ -9,8 +19,8 @@ for i in range(len(df)):
         data_bersih.append(baris)
 
 kolom = [
-    'No. Pelanggan', 'Nama Pelanggan', 'Tgl Faktur', 
-    'No. Faktur. (SO)', 'No. Form', 'Total Diterima', 
+    'No. Pelanggan', 'Nama Pelanggan', 'Tgl Faktur',
+    'No. Faktur. (SO)', 'No. Form', 'Total Diterima',
     'Nilai terima', 'Nama Bank', 'Tgl Cek'
 ]
 
